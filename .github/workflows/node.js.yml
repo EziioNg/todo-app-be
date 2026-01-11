@@ -36,4 +36,4 @@ jobs:
       run: |
           pm2 describe todo-app > /dev/null \
             && pm2 restart todo-app \
-            || pm2 start dist/main.js --name todo-app
+            || pm2 start dist/main.ts --name todo-app
