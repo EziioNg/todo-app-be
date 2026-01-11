@@ -6,6 +6,7 @@ name: Node.js CI
 on:
   push:
     branches: [ "master" ]
+
 jobs:
   build:
 
@@ -23,4 +24,8 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-    - run: npm ci
+    - name: Enable Corepack
+      run: corepack enable
+
+    - name: Install dependencies
+      run: yarn install --frozen-lockfile
