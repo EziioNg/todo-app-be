@@ -15,7 +15,7 @@ async function bootstrap() {
   app.useGlobalFilters(new HttpExceptionFilter());
   app.useGlobalInterceptors(new TransformInterceptor2());
   app.enableCors({
-    origin: 'http://localhost:3305',
+    origin: 'http://localhost:3000',
     credentials: true,
   });
   app.use(cookieParser());
