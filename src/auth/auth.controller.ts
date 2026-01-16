@@ -58,7 +58,8 @@ export class AuthController {
   logOut(@Res({ passthrough: true }) res: express.Response) {
     res.clearCookie('access_token', {
       httpOnly: true,
-      sameSite: 'lax',
+      secure: true,
+      sameSite: 'none',
     });
 
     return {
