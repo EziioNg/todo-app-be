@@ -1,7 +1,7 @@
-import { IsString, IsBoolean, IsOptional } from 'class-validator';
+import { IsString, IsBoolean, IsNotEmpty, IsOptional } from 'class-validator';
 
 export class CreateTodosDto {
-  @IsOptional()
+  @IsNotEmpty({ message: 'Title is required' })
   @IsString()
   title: string;
 

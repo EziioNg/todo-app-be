@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import {
   Body,
   Controller,
@@ -7,15 +6,18 @@ import {
   Post,
   Res,
   UseGuards,
+  ValidationPipe,
 } from '@nestjs/common';
 import express from 'express';
 import ms from 'ms';
 
 import { AuthService } from './auth.service';
+import { AuthGuard } from './auth.guard';
 import { HttpStatusCode } from 'src/global/globalEnum';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
-import { AuthGuard } from './auth.guard';
 import type { JwtPayload } from './types/jwt-payload.type';
+import { RegisterUsers } from './users/dto/registerUsers.dto';
+import { LoginUsers } from './users/dto/loginUsers.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -23,23 +25,23 @@ export class AuthController {
 
   @Post('register')
   async register(
-    @Body('username') username: string,
-    @Body('email') email: string,
-    @Body('password') password: string,
+    @Body(new ValidationPipe({ whitelist: true }))
+    body: RegisterUsers,
   ) {
+    const { username, email, password } = body;
     return this.authService.register(username, email, password);
   }
 
   @HttpCode(HttpStatusCode.SUCCESS)
   @Post('login')
   async signIn(
-    @Body() signInDto: Record<string, any>,
+    @Body(new ValidationPipe({ whitelist: true }))
+    body: LoginUsers,
     @Res({ passthrough: true }) response: express.Response,
   ) {
-    const result = await this.authService.login(
-      signInDto.username,
-      signInDto.password,
-    );
+    const { username, password } = body;
+
+    const result = await this.authService.login(username, password);
     const { access_token } = result;
 
     response.cookie('access_token', access_token, {
