@@ -11,10 +11,10 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { TodosService } from './todos.service';
-import { CreateTodosDto } from './dto/createTodos.dto';
-import { UpdateTodosDto } from './dto/updateTodos.dto';
+import { CreateTodosDto } from './dtos/createTodos.dto';
+import { UpdateTodosDto } from './dtos/updateTodos.dto';
 import { AuthGuard } from 'src/auth/auth.guard';
-import type { JwtPayload } from 'src/auth/types/jwt-payload.type';
+import type { JwtPayload } from 'src/common/types/jwt-payload.type';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 
 @Controller('todos')
@@ -22,7 +22,6 @@ export class TodosController {
   constructor(private readonly todosService: TodosService) {}
 
   @UseGuards(AuthGuard)
-  // @Get()findAll() {return this.todosService.findAll();}
   @Get()
   async findTodosByUser(@CurrentUser() user: JwtPayload) {
     const userId = user.sub;
@@ -31,11 +30,6 @@ export class TodosController {
     // console.log('todos received: ', todos);
 
     return todos;
-  }
-
-  @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.todosService.findOne(id);
   }
 
   @UseGuards(AuthGuard)

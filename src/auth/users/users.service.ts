@@ -10,15 +10,15 @@ export class UsersService {
     private usersRepository: Repository<UsersEntity>,
   ) {}
 
-  async create(data: Partial<UsersEntity>): Promise<UsersEntity> {
-    return this.usersRepository.save(data);
-  }
-
-  async findByEmail(email: string): Promise<UsersEntity | null> {
-    return this.usersRepository.findOne({ where: { email } });
+  async findById(userId: number): Promise<UsersEntity | null> {
+    return this.usersRepository.findOne({ where: { id: userId } });
   }
 
   async findByName(username: string): Promise<UsersEntity | null> {
     return this.usersRepository.findOne({ where: { username } });
+  }
+
+  async findByEmail(email: string): Promise<UsersEntity | null> {
+    return this.usersRepository.findOne({ where: { email } });
   }
 }
