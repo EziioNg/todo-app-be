@@ -50,6 +50,7 @@ export class AuthController {
       httpOnly: true,
       secure: true,
       sameSite: 'none',
+      domain: '.eziio.site',
       maxAge: ms('1h'),
     });
 
@@ -57,6 +58,7 @@ export class AuthController {
       httpOnly: true,
       secure: true,
       sameSite: 'none',
+      domain: '.eziio.site',
       maxAge: ms('1w'),
     });
     return user;
@@ -133,6 +135,7 @@ export class AuthController {
       httpOnly: true,
       secure: true,
       sameSite: 'none',
+      domain: '.eziio.site',
       maxAge: ms('1h'),
     });
 
