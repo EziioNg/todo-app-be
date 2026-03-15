@@ -2,8 +2,8 @@ import {
   Body,
   Controller,
   Get,
-  HttpCode,
   Post,
+  Put,
   Res,
   UseGuards,
   ValidationPipe,
@@ -13,11 +13,14 @@ import ms from 'ms';
 
 import { AuthService } from './auth.service';
 import { AuthGuard } from './auth.guard';
-import { HttpStatusCode } from 'src/global/globalEnum';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
-import type { JwtPayload } from './types/jwt-payload.type';
-import { RegisterUsers } from './users/dto/registerUsers.dto';
-import { LoginUsers } from './users/dto/loginUsers.dto';
+import type { JwtPayload } from '../common/types/jwt-payload.type';
+import { RegisterUsersDto } from './dto/registerUsers.dto';
+import { LoginUsersDto } from './dto/loginUsers.dto';
+import { updateFirstPasswordDto } from './dto/updateFirstPassword.dto';
+import { RefreshTokenGuard } from './refresh.guard';
+import { VerifyUserFirstLoginDto } from './dto/verifyUserFirstLogin.dto';
+import { VerifyAdminDto } from './dto/verifyAdmin.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -26,39 +29,47 @@ export class AuthController {
   @Post('register')
   async register(
     @Body(new ValidationPipe({ whitelist: true }))
-    body: RegisterUsers,
+    body: RegisterUsersDto,
   ) {
     const { username, email, password } = body;
     return this.authService.register(username, email, password);
   }
 
-  @HttpCode(HttpStatusCode.SUCCESS)
   @Post('login')
   async signIn(
     @Body(new ValidationPipe({ whitelist: true }))
-    body: LoginUsers,
+    body: LoginUsersDto,
     @Res({ passthrough: true }) response: express.Response,
   ) {
     const { username, password } = body;
 
     const result = await this.authService.login(username, password);
-    const { access_token } = result;
+    const { access_token, refresh_token, ...user } = result;
 
     response.cookie('access_token', access_token, {
       httpOnly: true,
       secure: true,
       sameSite: 'none',
-      maxAge: ms('5m'),
+      maxAge: ms('1h'),
     });
-    return {
-      message: 'Login successfully!',
-    };
+
+    response.cookie('refresh_token', refresh_token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'none',
+      maxAge: ms('1w'),
+    });
+    return user;
   }
 
-  @HttpCode(HttpStatusCode.SUCCESS)
   @Post('logout')
   logOut(@Res({ passthrough: true }) res: express.Response) {
     res.clearCookie('access_token', {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'none',
+    });
+    res.clearCookie('refresh_token', {
       httpOnly: true,
       secure: true,
       sameSite: 'none',
@@ -76,6 +87,55 @@ export class AuthController {
       id: user.sub,
       email: user.email,
       username: user.username,
+      role: user.role,
     };
+  }
+
+  @Post('verify-first-login-token')
+  verifyFirstLogin(@Body() data: VerifyUserFirstLoginDto) {
+    return this.authService.verifyFirstLogin(data.token);
+  }
+
+  @Post('verify-admin-token')
+  verifyAdmin(@Body() data: VerifyAdminDto) {
+    return this.authService.verifyAdmin(data.token);
+  }
+
+  @Post('update-password')
+  async updateFirstPassword(
+    @Body(new ValidationPipe({ whitelist: true })) body: updateFirstPasswordDto,
+  ) {
+    const { token, user_email, new_username, new_password } = body;
+
+    const result = await this.authService.updateFirstPassword(
+      token,
+      user_email,
+      new_username,
+      new_password,
+    );
+
+    return result;
+  }
+
+  @UseGuards(RefreshTokenGuard)
+  @Put('refresh_token')
+  async refreshToken(
+    @Res({ passthrough: true }) response: express.Response,
+    @CurrentUser() user: JwtPayload,
+  ) {
+    const userId = user.sub;
+    // console.log('userId: ', userId);
+
+    const result = await this.authService.refreshToken(userId);
+    const { new_access_token } = result;
+
+    response.cookie('access_token', new_access_token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'none',
+      maxAge: ms('1h'),
+    });
+
+    return result;
   }
 }

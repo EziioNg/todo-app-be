@@ -1,10 +1,9 @@
-/* eslint-disable @typescript-eslint/no-misused-promises */
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TodosEntity } from './todos.entity';
 import { Repository } from 'typeorm';
-import { CreateTodosDto } from './dto/createTodos.dto';
-import { UpdateTodosDto } from './dto/updateTodos.dto';
+import { CreateTodosDto } from './dtos/createTodos.dto';
+import { UpdateTodosDto } from './dtos/updateTodos.dto';
 
 @Injectable()
 export class TodosService {
@@ -12,14 +11,6 @@ export class TodosService {
     @InjectRepository(TodosEntity)
     private todosRepository: Repository<TodosEntity>,
   ) {}
-
-  findAll(): Promise<TodosEntity[]> {
-    const todos = this.todosRepository.find();
-
-    if (!todos) throw new NotFoundException('Error getting todos');
-
-    return todos;
-  }
 
   findByUser(userId: number): Promise<TodosEntity[]> {
     return this.todosRepository.find({

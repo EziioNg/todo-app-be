@@ -1,35 +1,38 @@
 import {
+  Injectable,
   CanActivate,
   ExecutionContext,
-  GoneException,
-  Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { Request as ExpressRequest } from 'express';
-import { JwtService, TokenExpiredError } from '@nestjs/jwt';
-import { jwtConstants } from '../utils/constants';
 import { JwtPayload } from '../common/types/jwt-payload.type';
+import { jwtConstants } from 'src/utils/constants';
 
 interface AuthenticatedRequest extends ExpressRequest {
   user: JwtPayload;
   cookies: {
-    access_token?: string;
+    refresh_token?: string;
   };
 }
 
 @Injectable()
-export class AuthGuard implements CanActivate {
+export class RefreshTokenGuard implements CanActivate {
   constructor(private jwtService: JwtService) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<AuthenticatedRequest>();
 
-    const access_token = request.cookies?.access_token;
-    if (!access_token) throw new UnauthorizedException('Access token missing');
+    const refreshToken = request.cookies?.refresh_token;
+    // console.log('refresh token recieved: ', refreshToken);
+
+    if (!refreshToken) {
+      throw new UnauthorizedException('Refresh token missing');
+    }
 
     try {
       const payload = await this.jwtService.verifyAsync<JwtPayload>(
-        access_token,
+        refreshToken,
         {
           secret: jwtConstants.secret,
         },
@@ -37,12 +40,8 @@ export class AuthGuard implements CanActivate {
 
       request.user = payload;
       return true;
-    } catch (error) {
-      if (error instanceof TokenExpiredError) {
-        throw new GoneException('Access token expired');
-      }
-
-      throw new UnauthorizedException('Invalid access token');
+    } catch {
+      throw new UnauthorizedException('Invalid refresh token');
     }
   }
 }

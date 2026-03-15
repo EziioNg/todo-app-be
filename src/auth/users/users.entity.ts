@@ -1,9 +1,11 @@
+import { EmployeesEntity } from 'src/modules/employees/employees.entity';
 import { TodosEntity } from 'src/modules/todos/todos.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -11,24 +13,36 @@ import {
 @Entity('users')
 export class UsersEntity {
   @PrimaryGeneratedColumn()
-  id: number;
+  id!: number;
 
   @Column({ unique: true })
-  username: string;
+  username!: string;
+
+  @Column({ default: false })
+  isAdminActive!: boolean;
+
+  @Column({ default: false })
+  isFirstLogin!: boolean;
 
   @Column({ unique: true })
-  email: string;
+  email!: string;
 
   @Column()
-  password: string;
+  password!: string;
+
+  @Column()
+  role!: string;
 
   // 1 user có nhiều todos
   @OneToMany(() => TodosEntity, (todo) => todo.user)
-  todos: TodosEntity[];
+  todos!: TodosEntity[];
+
+  @OneToOne(() => EmployeesEntity, (employee) => employee.user)
+  employeeProfile!: EmployeesEntity;
 
   @CreateDateColumn()
-  createdAt: Date;
+  createdAt!: Date;
 
   @UpdateDateColumn()
-  updatedAt: Date;
+  updatedAt!: Date;
 }

@@ -5,31 +5,32 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
-@Entity('todos')
-export class TodosEntity {
+@Entity('employees')
+export class EmployeesEntity {
   @PrimaryGeneratedColumn()
   id!: number;
 
   @Column()
-  title!: string;
+  userId!: number;
 
-  @Column({ default: false })
-  completed!: boolean;
-
-  // N todo thuộc về 1 user
-  @ManyToOne(() => UsersEntity, (user) => user.todos, {
-    onDelete: 'CASCADE',
-  })
+  @OneToOne(() => UsersEntity, (user) => user.employeeProfile)
   @JoinColumn({ name: 'userId' })
   user!: UsersEntity;
 
-  // FK thực sự trong DB
   @Column()
-  userId!: number;
+  employee_phone!: string;
+
+  @Column()
+  createdById!: number;
+
+  @ManyToOne(() => UsersEntity)
+  @JoinColumn({ name: 'createdById' })
+  createdBy!: UsersEntity;
 
   @CreateDateColumn()
   createdAt!: Date;
