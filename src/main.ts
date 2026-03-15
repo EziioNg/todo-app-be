@@ -9,8 +9,8 @@ async function bootstrap() {
   app.useGlobalFilters(new HttpExceptionFilter());
   app.useGlobalInterceptors(new TransformInterceptor());
   app.enableCors({
-    origin: 'http://localhost:3000',
-    // origin: 'https://todo.eziio.site',
+    // origin: 'http://localhost:3000',
+    origin: 'https://todo.eziio.site',
     credentials: true,
   });
   app.use(cookieParser());
