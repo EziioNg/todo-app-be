@@ -16,7 +16,6 @@ import { MailsModule } from 'src/modules/mails/mails.module';
     JwtModule.register({
       global: true,
       secret: jwtConstants.secret,
-      signOptions: { expiresIn: '60s' },
     }),
     TypeOrmModule.forFeature([UsersEntity]),
   ],
