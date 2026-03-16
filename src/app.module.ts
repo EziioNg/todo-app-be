@@ -12,27 +12,24 @@ import { TodosModule } from './modules/todos/todos.module';
 import { TodosEntity } from './modules/todos/todos.entity';
 import { EmployeesModule } from './modules/employees/employees.module';
 import { EmployeesEntity } from './modules/employees/employees.entity';
+import { env } from './config/env';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: 'localhost',
-      port: 3306,
-      // username: 'root',
-      // password: '',
-      // database: 'nestjs-pj1',
-      // entities: [TodosEntity, UsersEntity, EmployeesEntity],
-      // synchronize: true,
-      username: 'nestjs',
-      password: 'Aa@123',
-      database: 'nestjs_pj1',
+      host: env.DATABASE_HOST,
+      port: env.DATABASE_PORT,
+      username: env.DATABASE_USER,
+      password: env.DATABASE_PASSWORD,
+      database: env.DATABASE_NAME,
       entities: [TodosEntity, UsersEntity, EmployeesEntity],
-      synchronize: false,
+      // synchronize: true, // local
+      synchronize: false, // prod
     }),
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: ['.env.development.local', '.env.development.production'],
+      envFilePath: process.env.NODE_ENV === 'dev' ? '.env' : '.env.production',
     }),
     TodosModule,
     AuthModule,
