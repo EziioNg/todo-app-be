@@ -50,7 +50,7 @@ export class AuthController {
       httpOnly: true,
       secure: true,
       sameSite: 'none',
-      domain: '.eziio.site',
+      // domain: '.eziio.site',
       maxAge: ms('1h'),
     });
 
@@ -58,7 +58,7 @@ export class AuthController {
       httpOnly: true,
       secure: true,
       sameSite: 'none',
-      domain: '.eziio.site',
+      // domain: '.eziio.site',
       maxAge: ms('1w'),
     });
     return user;
@@ -70,13 +70,13 @@ export class AuthController {
       httpOnly: true,
       secure: true,
       sameSite: 'none',
-      domain: '.eziio.site',
+      // domain: '.eziio.site',
     });
     res.clearCookie('refresh_token', {
       httpOnly: true,
       secure: true,
       sameSite: 'none',
-      domain: '.eziio.site',
+      // domain: '.eziio.site',
     });
 
     return {
@@ -137,7 +137,7 @@ export class AuthController {
       httpOnly: true,
       secure: true,
       sameSite: 'none',
-      domain: '.eziio.site',
+      // domain: '.eziio.site',
       maxAge: ms('1h'),
     });
 

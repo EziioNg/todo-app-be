@@ -7,34 +7,51 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './auth/users/users.module';
-import { UsersEntity } from './auth/users/users.entity';
 import { TodosModule } from './modules/todos/todos.module';
-import { TodosEntity } from './modules/todos/todos.entity';
 import { EmployeesModule } from './modules/employees/employees.module';
-import { EmployeesEntity } from './modules/employees/employees.entity';
+import { TasksModule } from './modules/tasks/tasks.module';
 import { env } from './config/env';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      type: 'mysql',
-      host: env.DATABASE_HOST,
-      port: env.DATABASE_PORT,
-      username: env.DATABASE_USER,
-      password: env.DATABASE_PASSWORD,
-      database: env.DATABASE_NAME,
-      entities: [TodosEntity, UsersEntity, EmployeesEntity],
-      // synchronize: true, // local
-      synchronize: false, // prod
-    }),
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: process.env.NODE_ENV === 'dev' ? '.env' : '.env.production',
     }),
+    TypeOrmModule.forRoot({
+      type: 'postgres',
+      ...(env.DATABASE_URL
+        ? {
+            url: env.DATABASE_URL,
+            ssl: { rejectUnauthorized: false },
+            extra: { max: 5 },
+          }
+        : {
+            host: env.DATABASE_HOST,
+            port: Number(env.DATABASE_PORT),
+            username: env.DATABASE_USER,
+            password: env.DATABASE_PASSWORD,
+            database: env.DATABASE_NAME,
+          }),
+      autoLoadEntities: true,
+      synchronize: process.env.NODE_ENV === 'dev',
+    }),
+    // TypeOrmModule.forRoot({
+    //   type: 'postgres',
+    //   host: env.DATABASE_HOST,
+    //   port: env.DATABASE_PORT,
+    //   username: env.DATABASE_USER,
+    //   password: env.DATABASE_PASSWORD,
+    //   database: env.DATABASE_NAME,
+    //   entities: [TodosEntity, UsersEntity, EmployeesEntity, TasksEntity],
+    //   synchronize: true, // local
+    //   // synchronize: false, // prod
+    // }),
     TodosModule,
     AuthModule,
     UsersModule,
     EmployeesModule,
+    TasksModule,
   ],
   controllers: [AppController],
   providers: [AppService],
