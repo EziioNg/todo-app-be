@@ -6,19 +6,19 @@ const envSchema = z.object({
 
   PORT: z.coerce.number(),
 
-  DATABASE_HOST: z.string(),
-  DATABASE_PORT: z.coerce.number(),
+  DATABASE_URL: z.string().optional(),
 
-  DATABASE_NAME: z.string(),
-  DATABASE_USER: z.string(),
-  DATABASE_PASSWORD: z.string(),
+  DATABASE_HOST: z.string().optional(),
+  DATABASE_PORT: z.coerce.number().optional(),
+
+  DATABASE_NAME: z.string().optional(),
+  DATABASE_USER: z.string().optional(),
+  DATABASE_PASSWORD: z.string().optional(),
 
   WEBSITE_DOMAIN: z.string(),
 
   RESEND_API_KEY: z.string(),
   RESEND_ADMIN_SENDER_EMAIL: z.string().email(),
-
-  DATABASE_URL: z.string(),
 });
 
 const parsed = envSchema.safeParse(process.env);
