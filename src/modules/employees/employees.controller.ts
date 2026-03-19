@@ -23,17 +23,10 @@ export class EmployeesController {
 
   @UseGuards(AuthGuard, RolesGuard)
   @Roles('admin')
-  @Get('admin-only')
-  getAdminData() {
-    return 'Only admin can see this';
-  }
-
-  @UseGuards(AuthGuard, RolesGuard)
-  @Roles('admin')
   @Get('get-employees')
   async getEmployees(@CurrentUser() user: JwtPayload) {
-    const userId = user.sub;
-    const employees = await this.employeesService.findEmployeesByUser(userId);
+    const adminId = user.sub;
+    const employees = await this.employeesService.findEmployeesByAdmin(adminId);
 
     return employees;
   }

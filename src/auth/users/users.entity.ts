@@ -1,4 +1,5 @@
 import { EmployeesEntity } from 'src/modules/employees/employees.entity';
+import { TasksEntity } from 'src/modules/tasks/tasks.entity';
 import { TodosEntity } from 'src/modules/todos/todos.entity';
 import {
   Column,
@@ -39,6 +40,9 @@ export class UsersEntity {
 
   @OneToOne(() => EmployeesEntity, (employee) => employee.user)
   employeeProfile!: EmployeesEntity;
+
+  @OneToMany(() => TasksEntity, (task) => task.user)
+  tasks!: TasksEntity[];
 
   @CreateDateColumn()
   createdAt!: Date;

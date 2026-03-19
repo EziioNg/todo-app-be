@@ -27,11 +27,11 @@ export class EmployeesService {
     private usersService: UsersService,
   ) {}
 
-  async findEmployeesByUser(userId: number): Promise<EmployeeResponse[]> {
+  async findEmployeesByAdmin(adminId: number): Promise<EmployeeResponse[]> {
     const employees = await this.employeesRepository.find({
       where: {
         createdBy: {
-          id: userId,
+          id: adminId,
         },
       },
       relations: {

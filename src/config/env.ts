@@ -17,6 +17,8 @@ const envSchema = z.object({
 
   RESEND_API_KEY: z.string(),
   RESEND_ADMIN_SENDER_EMAIL: z.string().email(),
+
+  DATABASE_URL: z.string(),
 });
 
 const parsed = envSchema.safeParse(process.env);
