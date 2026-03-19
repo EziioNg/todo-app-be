@@ -35,7 +35,10 @@ export class TasksService {
       order: { createdAt: 'DESC' },
     });
 
-    return tasks;
+    return tasks.map((task) => ({
+      ...task,
+      user: pickUser(task.user),
+    }));
   }
 
   async findTasksByUser(employeeId: number): Promise<TaskResponse[]> {
