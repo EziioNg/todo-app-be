@@ -15,11 +15,12 @@ import { NewMessagesDto } from './dto/newMessages.dto';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import type { AuthenticatedSocket } from 'src/common/types/socket-auth.type';
 import { WsRolesGuard } from './wsRoles.guard';
+import { env } from 'src/config/env';
 
 // @WebSocketGateway({ cors: { origin: '*' } })
 @WebSocketGateway({
   cors: {
-    origin: 'http://localhost:3000',
+    origin: env.WEBSITE_DOMAIN,
     credentials: true,
   },
 })
