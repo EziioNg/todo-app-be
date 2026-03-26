@@ -16,6 +16,7 @@ import { UsersEntity } from './users/users.entity';
 import { JwtPayload } from '../common/types/jwt-payload.type';
 import { pickUser } from 'src/utils/formatters';
 import { MailsService } from 'src/modules/mails/mails.service';
+import { env } from 'src/config/env';
 
 interface IuserInfo {
   sub: number;
@@ -60,7 +61,7 @@ export class AuthService {
       },
     );
 
-    const adminVerifyUrl = `http://localhost:3000/auth/verification-admin?token=${adminVerifyToken}`;
+    const adminVerifyUrl = `${env.WEBSITE_DOMAIN}/auth/verification-admin?token=${adminVerifyToken}`;
     await this.mailsService.sendAdminVerification(
       userAdmin.email,
       userAdmin.username,

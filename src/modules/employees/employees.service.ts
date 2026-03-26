@@ -14,6 +14,7 @@ import { JwtService } from '@nestjs/jwt';
 import { pickUser } from 'src/utils/formatters';
 import { EmployeeResponse } from 'src/common/types/employee-response.type';
 import { UsersService } from 'src/auth/users/users.service';
+import { env } from 'src/config/env';
 
 @Injectable()
 export class EmployeesService {
@@ -91,7 +92,7 @@ export class EmployeesService {
       },
     );
 
-    const firstLoginUrl = `http://localhost:3000/auth/verification-first-login?token=${firstLoginToken}`;
+    const firstLoginUrl = `${env.WEBSITE_DOMAIN}/auth/verification-first-login?token=${firstLoginToken}`;
     await this.mailsService.sendEmployeeCredentials(
       employee_email,
       employee_name,
