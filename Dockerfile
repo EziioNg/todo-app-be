@@ -37,6 +37,9 @@ RUN yarn install --production --frozen-lockfile
 # Copy build output from builder
 COPY --from=builder /app/dist ./dist
 
+# Copy templates
+COPY --from=builder /app/src/modules/mails/templates ./dist/modules/mails/templates
+
 EXPOSE 3305
 
 # Run app
