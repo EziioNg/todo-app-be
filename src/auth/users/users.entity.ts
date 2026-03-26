@@ -1,6 +1,3 @@
-import { EmployeesEntity } from 'src/modules/employees/employees.entity';
-import { TasksEntity } from 'src/modules/tasks/tasks.entity';
-import { TodosEntity } from 'src/modules/todos/todos.entity';
 import {
   Column,
   CreateDateColumn,
@@ -10,6 +7,10 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { ParticipantEntity } from 'src/modules/chat/participants.entity';
+import { EmployeesEntity } from 'src/modules/employees/employees.entity';
+import { TasksEntity } from 'src/modules/tasks/tasks.entity';
+import { TodosEntity } from 'src/modules/todos/todos.entity';
 
 @Entity('users')
 export class UsersEntity {
@@ -43,6 +44,9 @@ export class UsersEntity {
 
   @OneToMany(() => TasksEntity, (task) => task.user)
   tasks!: TasksEntity[];
+
+  @OneToMany(() => ParticipantEntity, (p) => p.user)
+  participants!: ParticipantEntity[];
 
   @CreateDateColumn()
   createdAt!: Date;

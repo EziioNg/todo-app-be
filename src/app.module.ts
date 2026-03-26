@@ -10,8 +10,10 @@ import { UsersModule } from './auth/users/users.module';
 import { TodosModule } from './modules/todos/todos.module';
 import { EmployeesModule } from './modules/employees/employees.module';
 import { TasksModule } from './modules/tasks/tasks.module';
+import { ChatModule } from './modules/chat/chat.module';
 import { env } from './config/env';
 
+const isProd = process.env.NODE_ENV === 'production';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -20,7 +22,7 @@ import { env } from './config/env';
     }),
     TypeOrmModule.forRoot({
       type: 'postgres',
-      ...(env.DATABASE_URL
+      ...(isProd
         ? {
             url: env.DATABASE_URL,
             ssl: { rejectUnauthorized: false },
@@ -35,6 +37,7 @@ import { env } from './config/env';
           }),
       autoLoadEntities: true,
       synchronize: process.env.NODE_ENV === 'dev',
+      // synchronize: true,
     }),
     // TypeOrmModule.forRoot({
     //   type: 'postgres',
@@ -45,13 +48,14 @@ import { env } from './config/env';
     //   database: env.DATABASE_NAME,
     //   entities: [TodosEntity, UsersEntity, EmployeesEntity, TasksEntity],
     //   synchronize: true, // local
-    //   // synchronize: false, // prod
+    //   synchronize: false, // prod
     // }),
     TodosModule,
     AuthModule,
     UsersModule,
     EmployeesModule,
     TasksModule,
+    ChatModule,
   ],
   controllers: [AppController],
   providers: [AppService],
