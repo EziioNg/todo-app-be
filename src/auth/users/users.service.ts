@@ -15,7 +15,10 @@ export class UsersService {
   }
 
   async findByName(username: string): Promise<UsersEntity | null> {
-    return this.usersRepository.findOne({ where: { username } });
+    return this.usersRepository.findOne({
+      where: { username },
+      relations: ['employeeProfile', 'employeeProfile.createdBy'],
+    });
   }
 
   async findByEmail(email: string): Promise<UsersEntity | null> {

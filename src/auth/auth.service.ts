@@ -23,6 +23,7 @@ interface IuserInfo {
   username: string;
   email: string;
   role: string;
+  type: string;
 }
 
 @Injectable()
@@ -49,11 +50,14 @@ export class AuthService {
       role: 'admin',
       isAdminActive: false,
     });
+    console.log('userAdmin: ', userAdmin);
 
-    const adminVerifyToken = await this.jwtService.signAsync(
+    const adminVerifyToken = await this.jwtService.signAsync<JwtPayload>(
       {
         sub: userAdmin.id,
+        username: userAdmin.username,
         email: userAdmin.email,
+        role: userAdmin.role,
         type: 'verify_admin',
       },
       {
@@ -77,6 +81,11 @@ export class AuthService {
   ): Promise<{
     access_token: string;
     refresh_token: string;
+    createdBy?: {
+      id: number;
+      username: string;
+      email: string;
+    };
   }> {
     const user = await this.usersService.findByName(username);
     if (!user) throw new NotFoundException('User not found');
@@ -103,16 +112,38 @@ export class AuthService {
       username: user.username,
       email: user.email,
       role: user.role,
+      type: 'login_token',
     };
 
-    const access_token = await this.jwtService.signAsync(userInfo, {
+    const access_token = await this.jwtService.signAsync<JwtPayload>(userInfo, {
       expiresIn: '1h',
     });
-    const refresh_token = await this.jwtService.signAsync(userInfo, {
-      expiresIn: '1w',
-    });
+    const refresh_token = await this.jwtService.signAsync<JwtPayload>(
+      userInfo,
+      {
+        expiresIn: '1w',
+      },
+    );
 
-    return { access_token, refresh_token, ...pickUser(user) };
+    // return { access_token, refresh_token, ...pickUser(user) };
+    const baseResponse = {
+      access_token,
+      refresh_token,
+      ...pickUser(user),
+    };
+
+    if (user.role === 'employee' && user.employeeProfile) {
+      return {
+        ...baseResponse,
+        createdBy: {
+          id: user.employeeProfile.createdBy?.id,
+          username: user.employeeProfile.createdBy?.username,
+          email: user.employeeProfile.createdBy?.email,
+        },
+      };
+    }
+
+    return baseResponse;
   }
 
   async verifyFirstLogin(token: string) {
@@ -186,12 +217,14 @@ export class AuthService {
   async verifyAdmin(token: string) {
     try {
       const payload = await this.jwtService.verifyAsync<JwtPayload>(token);
+      console.log('payload: ', payload);
       if (payload?.type !== 'verify_admin')
         throw new UnauthorizedException('Invalid token type!');
 
       const admin = await this.usersRepository.findOne({
-        where: { id: payload.sub },
+        where: { email: payload.email },
       });
+      console.log('admin: ', admin);
       if (!admin) throw new NotFoundException('Admin not found!');
 
       if (admin.isAdminActive) {
@@ -199,7 +232,7 @@ export class AuthService {
       }
 
       await this.usersRepository.update(
-        { id: payload.sub },
+        { id: admin.id },
         { isAdminActive: true },
       );
 
@@ -226,11 +259,15 @@ export class AuthService {
         username: existedUser.username,
         email: existedUser.email,
         role: existedUser.role,
+        type: 'new_access_token',
       };
 
-      const new_access_token = await this.jwtService.signAsync(userInfo, {
-        expiresIn: '1h',
-      });
+      const new_access_token = await this.jwtService.signAsync<JwtPayload>(
+        userInfo,
+        {
+          expiresIn: '1h',
+        },
+      );
 
       return { new_access_token };
     } catch {

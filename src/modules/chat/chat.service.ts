@@ -72,24 +72,23 @@ export class ChatService {
   }
 
   async createConversation(
-    adminId: number,
-    employeeId: number,
-    employeeName: string,
+    currentUserId: number,
+    userId: number,
+    userName: string,
   ) {
-    const employee = await this.userRepository.findOne({
+    const user = await this.userRepository.findOne({
       where: {
-        id: employeeId,
-        username: employeeName,
+        id: userId,
+        username: userName,
       },
     });
-    if (!employee) throw new NotFoundException('Employee not found');
-    const employeeUserId = employee.id;
-    // console.log('raw employee name: ', employeeName);
-    // console.log('employeeUserId: ', employeeUserId);
-    // console.log('emp name from service: ', employee.username);
+    if (!user) throw new NotFoundException('User not found');
+    const existedUserId = user.id;
+    // console.log('userId: ', userId);
+    // console.log('userName: ', userName);
 
     const participants = await this.participantRepository.find({
-      where: [{ userId: adminId }, { userId: employeeUserId }],
+      where: [{ userId: currentUserId }, { userId: existedUserId }],
     });
     // console.log('participants:', participants);
 
@@ -115,8 +114,8 @@ export class ChatService {
     const conversation = await this.conversationRepository.save({});
 
     await this.participantRepository.save([
-      { userId: adminId, conversationId: conversation.id },
-      { userId: employeeUserId, conversationId: conversation.id },
+      { userId: currentUserId, conversationId: conversation.id },
+      { userId: existedUserId, conversationId: conversation.id },
     ]);
 
     return conversation;
@@ -143,7 +142,6 @@ export class ChatService {
 
     return this.messageRepository.find({
       where: { conversationId },
-      relations: ['sender'],
       order: { createdAt: 'ASC' },
     });
   }
