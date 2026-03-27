@@ -12,9 +12,7 @@ import { Server, Socket } from 'socket.io';
 import { ChatService } from './chat.service';
 import { WsAuthGuard } from './ws.guard';
 import { NewMessagesDto } from './dto/newMessages.dto';
-import { Roles } from 'src/common/decorators/roles.decorator';
 import type { AuthenticatedSocket } from 'src/common/types/socket-auth.type';
-import { WsRolesGuard } from './wsRoles.guard';
 import { env } from 'src/config/env';
 
 // @WebSocketGateway({ cors: { origin: '*' } })
@@ -49,25 +47,23 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     });
   }
 
-  @UseGuards(WsAuthGuard, WsRolesGuard)
-  @Roles('admin')
+  @UseGuards(WsAuthGuard)
   @SubscribeMessage('create_conversation')
   async handleCreateConversation(
     @ConnectedSocket() client: AuthenticatedSocket,
-    @MessageBody() payload: { employeeId: number; employeeName: string },
+    @MessageBody() payload: { userId: number; userName: string },
   ) {
-    const adminId = client.data.user.sub;
-    // console.log('adminId: ', adminId);
+    const currentUserId = client.data.user.sub;
 
-    const employeeId = payload.employeeId;
-    // console.log('emp id: ', employeeId);
-    const employeeName = payload.employeeName;
-    // console.log('emp name from gateway: ', employeeName);
+    const userId = payload.userId;
+    // console.log('emp id: ', userId);
+    const userName = payload.userName;
+    // console.log('emp name from gateway: ', userName);
 
     const conversation = await this.chatService.createConversation(
-      adminId,
-      employeeId,
-      employeeName,
+      currentUserId,
+      userId,
+      userName,
     );
     // console.log('conversation: ', conversation);
 

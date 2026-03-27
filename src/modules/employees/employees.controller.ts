@@ -53,4 +53,14 @@ export class EmployeesController {
 
     return this.employeesService.deleteEmployee(employeeId, adminId);
   }
+
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('employee')
+  @Get('get-admin')
+  async getAdmin(@CurrentUser() user: JwtPayload) {
+    const employeeId = user.sub;
+    const admin = await this.employeesService.findAdminByEmployee(employeeId);
+
+    return admin;
+  }
 }

@@ -15,6 +15,7 @@ import { pickUser } from 'src/utils/formatters';
 import { EmployeeResponse } from 'src/common/types/employee-response.type';
 import { UsersService } from 'src/auth/users/users.service';
 import { env } from 'src/config/env';
+import { UserResponse } from 'src/common/types/user-response.type';
 
 @Injectable()
 export class EmployeesService {
@@ -126,5 +127,27 @@ export class EmployeesService {
     return {
       message: 'Employee deleted successfully',
     };
+  }
+
+  async findAdminByEmployee(employeeId: number): Promise<UserResponse | null> {
+    // console.log('employeeId: ', employeeId);
+    const employee = await this.employeesRepository.findOne({
+      where: {
+        user: {
+          id: employeeId,
+        },
+      },
+      relations: { user: true },
+    });
+    // console.log('employee from findAdminByEmployee: ', employee);
+
+    const admin = await this.usersRepository.findOne({
+      where: {
+        id: employee?.createdById,
+      },
+    });
+    // console.log('admin from findAdminByEmployee: ', admin);
+
+    return pickUser(admin);
   }
 }
