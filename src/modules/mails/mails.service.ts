@@ -22,11 +22,11 @@ export class MailsService {
     username: string,
     firstLoginUrl: string,
   ) {
-    const templatePath = join(
-      process.cwd(),
-      'src/modules/mails/templates/TodosVerifyEmail.html',
-    );
-    // const templatePath = join(__dirname, 'templates/TodosVerifyEmail.html');
+    // const templatePath = join(
+    //   process.cwd(),
+    //   'src/modules/mails/templates/TodosVerifyEmail.html',
+    // );
+    const templatePath = join(__dirname, 'templates/TodosVerifyEmail.html');
 
     let html = readFileSync(templatePath, 'utf8');
 
@@ -48,11 +48,11 @@ export class MailsService {
     username: string,
     firstLoginUrl: string,
   ) {
-    const templatePath = join(
-      process.cwd(),
-      'src/modules/mails/templates/TodosAccountEmail.html',
-    );
-    // const templatePath = join(__dirname, 'templates/TodosAccountEmail.html');
+    // const templatePath = join(
+    //   process.cwd(),
+    //   'src/modules/mails/templates/TodosAccountEmail.html',
+    // );
+    const templatePath = join(__dirname, 'templates/TodosAccountEmail.html');
 
     let html = readFileSync(templatePath, 'utf8');
 
