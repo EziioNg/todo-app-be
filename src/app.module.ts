@@ -7,7 +7,6 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './auth/users/users.module';
-import { TodosModule } from './modules/todos/todos.module';
 import { EmployeesModule } from './modules/employees/employees.module';
 import { TasksModule } from './modules/tasks/tasks.module';
 import { ChatModule } from './modules/chat/chat.module';
@@ -50,7 +49,6 @@ const isProd = process.env.NODE_ENV === 'production';
     //   synchronize: true, // local
     //   synchronize: false, // prod
     // }),
-    TodosModule,
     AuthModule,
     UsersModule,
     EmployeesModule,

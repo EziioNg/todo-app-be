@@ -18,6 +18,7 @@ import { Roles } from 'src/common/decorators/roles.decorator';
 import type { JwtPayload } from 'src/common/types/jwt-payload.type';
 import { CreateTasksDto } from './dtos/createTasks.dto';
 import { UpdateTaskStatusDto } from './dtos/updateTaskStatus.dto';
+import { UpdateTaskDescDto } from './dtos/updateTaskDesc.dto';
 
 @Controller('tasks')
 export class TasksController {
@@ -66,15 +67,30 @@ export class TasksController {
   }
 
   @UseGuards(AuthGuard, RolesGuard)
+  @Roles('admin')
+  @Put('update-task-desc/:id')
+  updateTaskDesc(
+    @CurrentUser() user: JwtPayload,
+    @Param('id') taskId: number,
+    @Body() data: UpdateTaskDescDto,
+  ) {
+    const adminId = user.sub;
+    // console.log('update data: ', data);
+    const updatedTask = this.tasksService.updateTaskDesc(adminId, taskId, data);
+
+    return updatedTask;
+  }
+
+  @UseGuards(AuthGuard, RolesGuard)
   @Roles('employee')
   @Put('update-task-status/:id')
   updateTaskStatus(
     @CurrentUser() user: JwtPayload,
-    @Body('id') taskId: number,
+    @Param('id') taskId: number,
     @Body() data: UpdateTaskStatusDto,
   ) {
     const employeeId = user.sub;
-    console.log('new status: ', data.status);
+    // console.log('new status: ', data.status);
     const updatedTask = this.tasksService.updateTaskStatus(
       employeeId,
       taskId,

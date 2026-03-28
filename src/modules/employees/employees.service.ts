@@ -1,4 +1,4 @@
-import { Repository } from 'typeorm';
+import { IsNull, Repository } from 'typeorm';
 import {
   BadRequestException,
   ForbiddenException,
@@ -35,6 +35,7 @@ export class EmployeesService {
         createdBy: {
           id: adminId,
         },
+        deletedAt: IsNull(),
       },
       relations: {
         user: true,
@@ -61,7 +62,8 @@ export class EmployeesService {
     if (!admin) throw new NotFoundException('Admin not found!');
 
     const existingUser = await this.usersRepository.findOne({
-      where: { email: employee_email },
+      where: { username: employee_name },
+      withDeleted: true,
     });
 
     if (existingUser) {
@@ -112,6 +114,7 @@ export class EmployeesService {
         user: {
           id: employeeId,
         },
+        deletedAt: IsNull(),
       },
       relations: { user: true },
     });
@@ -121,8 +124,10 @@ export class EmployeesService {
     if (employee.createdById !== adminId)
       throw new ForbiddenException('You cannot delete this employee');
 
-    await this.employeesRepository.delete(employee.id);
-    await this.usersRepository.delete(employee.user.id);
+    // await this.employeesRepository.delete(employee.id);
+    // await this.usersRepository.delete(employee.user.id);
+    await this.employeesRepository.softDelete(employee.id);
+    await this.usersRepository.softDelete(employee.user.id);
 
     return {
       message: 'Employee deleted successfully',
@@ -136,6 +141,7 @@ export class EmployeesService {
         user: {
           id: employeeId,
         },
+        deletedAt: IsNull(),
       },
       relations: { user: true },
     });

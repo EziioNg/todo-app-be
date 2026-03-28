@@ -1,6 +1,7 @@
 import {
   Column,
   CreateDateColumn,
+  DeleteDateColumn,
   Entity,
   OneToMany,
   OneToOne,
@@ -10,7 +11,6 @@ import {
 import { ParticipantEntity } from 'src/modules/chat/participants.entity';
 import { EmployeesEntity } from 'src/modules/employees/employees.entity';
 import { TasksEntity } from 'src/modules/tasks/tasks.entity';
-import { TodosEntity } from 'src/modules/todos/todos.entity';
 
 @Entity('users')
 export class UsersEntity {
@@ -26,7 +26,7 @@ export class UsersEntity {
   @Column({ default: false })
   isFirstLogin!: boolean;
 
-  @Column({ unique: true })
+  @Column()
   email!: string;
 
   @Column()
@@ -34,10 +34,6 @@ export class UsersEntity {
 
   @Column()
   role!: string;
-
-  // 1 user có nhiều todos
-  @OneToMany(() => TodosEntity, (todo) => todo.user)
-  todos!: TodosEntity[];
 
   @OneToOne(() => EmployeesEntity, (employee) => employee.user)
   employeeProfile!: EmployeesEntity;
@@ -53,4 +49,7 @@ export class UsersEntity {
 
   @UpdateDateColumn()
   updatedAt!: Date;
+
+  @DeleteDateColumn()
+  deletedAt?: Date;
 }

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UsersEntity } from './users.entity';
-import { Repository } from 'typeorm';
+import { Repository, IsNull } from 'typeorm';
 
 @Injectable()
 export class UsersService {
@@ -16,7 +16,7 @@ export class UsersService {
 
   async findByName(username: string): Promise<UsersEntity | null> {
     return this.usersRepository.findOne({
-      where: { username },
+      where: { username, deletedAt: IsNull() },
       relations: ['employeeProfile', 'employeeProfile.createdBy'],
     });
   }
