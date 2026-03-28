@@ -2,6 +2,7 @@ import { UsersEntity } from 'src/auth/users/users.entity';
 import {
   Column,
   CreateDateColumn,
+  DeleteDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
@@ -37,4 +38,7 @@ export class EmployeesEntity {
 
   @UpdateDateColumn()
   updatedAt!: Date;
+
+  @DeleteDateColumn()
+  deletedAt?: Date;
 }

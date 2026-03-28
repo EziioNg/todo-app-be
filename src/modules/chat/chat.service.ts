@@ -38,6 +38,7 @@ export class ChatService {
           user: true,
         },
       },
+      withDeleted: true,
     });
 
     const result = await Promise.all(

@@ -12,6 +12,7 @@ export const pickUser = (user: UsersEntity | null): UserResponse | null => {
     'email',
     'username',
     'role',
+    'isFirstLogin',
     'createdAt',
     'updatedAt',
   ]) as UserResponse;

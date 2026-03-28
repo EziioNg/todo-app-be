@@ -1,7 +1,7 @@
 import { IsString, IsNotEmpty, IsOptional, IsNumber } from 'class-validator';
 
 export class CreateTasksDto {
-  @IsNotEmpty({ message: 'Name is required' })
+  @IsNotEmpty({ message: 'Task title is required!' })
   @IsString()
   task_title!: string;
 
@@ -9,11 +9,11 @@ export class CreateTasksDto {
   @IsString()
   task_description!: string;
 
-  @IsNotEmpty({ message: 'Employee id is required' })
+  @IsNotEmpty({ message: 'Employee id is required!' })
   @IsNumber()
   assigneeId!: number;
 
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'Task priority is required!' })
   @IsString()
   priority!: string;
 

@@ -12,6 +12,7 @@ import { TasksEntity } from './tasks.entity';
 import { pickTask, pickUser } from 'src/utils/formatters';
 import { TaskResponse } from 'src/common/types/task-response.type';
 import { TaskStatus } from 'src/utils/constants';
+import { UpdateTaskDescDto } from './dtos/updateTaskDesc.dto';
 
 @Injectable()
 export class TasksService {
@@ -98,6 +99,30 @@ export class TasksService {
     return {
       message: 'Task deleted successfully',
     };
+  }
+
+  async updateTaskDesc(
+    adminId: number,
+    taskId: number,
+    data: UpdateTaskDescDto,
+  ) {
+    // console.log('new task title: ', data.title);
+    // console.log('new task desc: ', data.description);
+    // console.log('new task priority: ', data.priority);
+    const task = await this.taskRepository.findOne({
+      where: {
+        id: taskId,
+        createdById: adminId,
+      },
+    });
+    if (!task) throw new NotFoundException('Task not found!');
+
+    task.title = data.title;
+    task.description = data.description;
+    task.priority = data.priority;
+    const updatedTask = await this.taskRepository.save(task);
+
+    return updatedTask;
   }
 
   async updateTaskStatus(
